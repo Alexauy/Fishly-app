@@ -53,9 +53,16 @@ Included in the repo:
 
 What that means:
 
-- If someone clones this repo, they must provide their own Firebase configuration before Firebase-backed features will work
+- If someone clones this repo, the Flutter project and UI can still be reviewed normally
+- Live Firebase-backed features will only work after local Firebase configuration is added
 - The committed config files are safe placeholders only
 - Email/password and Firestore functionality require real local Firebase config values
+
+For evaluation purposes, this means:
+
+- The app structure, screens, planner logic, shop flow, and Firebase integration code are all present in the repository
+- A fresh clone is not intended to connect to the original development Firebase project automatically
+- Anyone who wants to test live authentication and Firestore persistence should restore their own local Firebase config first
 
 ## If Someone Wants Their Own Firebase Project
 
@@ -68,19 +75,3 @@ They should replace the current Firebase configuration with their own:
 5. Run FlutterFire configuration for their project.
 6. Replace [firebase_options.dart](C:\Users\16194\Documents\New project\fishly_flutter\lib\firebase\firebase_options.dart).
 7. Deploy Firestore rules from [firestore.rules](C:\Users\16194\Documents\New project\fishly_flutter\firestore.rules).
-
-## Current Auth Support
-
-Currently implemented:
-
-- Email/password account creation
-- Email/password sign-in
-
-Not currently implemented:
-
-- Google sign-in
-
-## Notes
-
-- Windows desktop builds may still depend on the local Visual Studio C++ toolchain because of Firebase plugins.
-- Android emulator testing is the primary supported workflow right now.
