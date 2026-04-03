@@ -38,7 +38,7 @@ flutter run -d <device-id>
 
 The main app entry point is:
 
-- [lib/main.dart](C:\Users\16194\Documents\New project\fishly_flutter\lib\main.dart)
+- `lib/main.dart`
 
 ## Firebase Setup Notes
 
@@ -46,10 +46,10 @@ This repository no longer includes live Firebase credentials.
 
 Included in the repo:
 
-- Placeholder Android Firebase config at [google-services.json](C:\Users\16194\Documents\New project\fishly_flutter\android\app\google-services.json)
-- Firebase app bootstrap in [firebase_bootstrap.dart](C:\Users\16194\Documents\New project\fishly_flutter\lib\firebase\firebase_bootstrap.dart)
-- Placeholder Firebase options in [firebase_options.dart](C:\Users\16194\Documents\New project\fishly_flutter\lib\firebase\firebase_options.dart)
-- Firestore rules in [firestore.rules](C:\Users\16194\Documents\New project\fishly_flutter\firestore.rules)
+- Placeholder Android Firebase config at `android/app/google-services.json`
+- Firebase app bootstrap in `lib/firebase/firebase_bootstrap.dart`
+- Placeholder Firebase options in `lib/firebase/firebase_options.dart`
+- Firestore rules in `firestore.rules`
 
 What that means:
 
@@ -71,7 +71,7 @@ They should replace the current Firebase configuration with their own:
 1. Create a Firebase project.
 2. Add an Android app in Firebase.
 3. Download a new `google-services.json`.
-4. Replace [google-services.json](C:\Users\16194\Documents\New project\fishly_flutter\android\app\google-services.json).
+4. Replace `android/app/google-services.json`.
 5. Run FlutterFire configuration for their project.
-6. Replace [firebase_options.dart](C:\Users\16194\Documents\New project\fishly_flutter\lib\firebase\firebase_options.dart).
-7. Deploy Firestore rules from [firestore.rules](C:\Users\16194\Documents\New project\fishly_flutter\firestore.rules).
+6. Replace `lib/firebase/firebase_options.dart`.
+7. Deploy Firestore rules from `firestore.rules`.
