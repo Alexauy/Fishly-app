@@ -66,16 +66,6 @@ What that means:
 - The committed config files are safe placeholders only
 - Email/password and Firestore functionality require real local Firebase config values
 
-For evaluation purposes, this means:
-
-- The app structure, screens, planner logic, shop flow, and Firebase integration code are all present in the repository
-- A fresh clone is not intended to connect to the original development Firebase project automatically
-- Anyone who wants to test live authentication and Firestore persistence should restore their own local Firebase config first
-
-## If Someone Wants Their Own Firebase Project
-
-They should replace the current Firebase configuration with their own:
-
 1. Create a Firebase project.
 2. Add an Android app in Firebase.
 3. Download a new `google-services.json`.
