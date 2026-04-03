@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fishly Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="./assets/styles.css">
+  <style>body { font-family: "Manrope", sans-serif; }</style>
+</head>
+<body class="screen-root">
+  <div class="device">
+    <div class="screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-icons">
+          <i class="fa-solid fa-signal"></i>
+          <i class="fa-solid fa-wifi"></i>
+          <i class="fa-solid fa-battery-three-quarters"></i>
+        </div>
+      </div>
+      <main class="viewport">
+        <section class="hero-card">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <span class="badge-pill"><i class="fa-solid fa-water"></i> 11 day streak</span>
+              <h1 class="app-title mt-4">Plan today like a tiny underwater adventure.</h1>
+              <p class="mt-3 text-sm text-cyan-50/95">Break down intimidating work, earn coins for focused effort, and get sketchy little pep talks from your goldfish companion, Bubbles.</p>
+            </div>
+            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=500&q=80" alt="Student working at desk" class="w-20 h-24 rounded-3xl object-cover border border-white/40">
+          </div>
+          <div class="mt-5 flex items-center justify-between">
+            <div>
+              <p class="text-xs uppercase tracking-[0.2em] text-cyan-50/80">Today's reward path</p>
+              <div class="mt-2 coin-pill"><i class="fa-solid fa-coins"></i> 35 coins earned</div>
+            </div>
+            <div class="relative flex items-center justify-center">
+              <div class="ring"></div>
+              <div class="ring-label">
+                70%
+                <div class="text-[10px] font-semibold text-slate-500">done</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mt-5 glass section-card">
+          <div class="section-heading">
+            <div>
+              <p class="text-sm font-extrabold text-slate-900">Today's planner</p>
+              <p class="text-xs muted">Big quests and their smaller swim-sized subgoals live in one queue.</p>
+            </div>
+            <span class="reward-chip">3 left</span>
+          </div>
+          <div class="space-y-3">
+            <div class="task-item">
+              <div class="task-check"><i class="fa-solid fa-check text-[11px]"></i></div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <p class="text-sm font-extrabold">Review biology notes</p>
+                  <span class="tag">30 min</span>
+                </div>
+                <p class="text-xs muted mt-1">Completed and bubbled away for +10 coins</p>
+              </div>
+              <span class="reward-chip">Easy win</span>
+            </div>
+            <div class="task-item">
+              <div class="task-check"></div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <p class="text-sm font-extrabold">Final paper sprint</p>
+                  <span class="tag">Big quest</span>
+                  <span class="reward-chip">90 min • +25 coins</span>
+                </div>
+                <p class="text-xs muted mt-1">Subgoals swim here automatically: outline intro, collect two sources</p>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-check"></div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <p class="text-sm font-extrabold">Outline intro paragraph</p>
+                  <span class="tag">Subgoal</span>
+                </div>
+                <p class="text-xs muted mt-1">Linked to Final paper sprint • 15 min • +5 coins</p>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-check"></div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <p class="text-sm font-extrabold">Collect two journal sources</p>
+                  <span class="tag">Subgoal</span>
+                </div>
+                <p class="text-xs muted mt-1">Linked to Final paper sprint • 45 min • +15 coins</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mt-5">
+          <div class="mini-stat">
+            <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Shop unlock</p>
+            <p class="mt-2 text-2xl font-extrabold text-slate-900">Sailor Hat</p>
+            <p class="text-xs muted mt-1">220 coins to style Bubbles</p>
+          </div>
+        </section>
+
+      </main>
+
+      <div class="speech-bubble">
+        <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-sky-500">Bubbles says</p>
+        <p class="mt-2 text-sm font-semibold leading-5">Tiny bites, not giant gulps. I rotate through fresh little pep talks so things don't get stale.</p>
+      </div>
+
+      <div class="avatar-companion gold-fish">
+        <div class="avatar-face"><div class="avatar-mouth"></div></div>
+      </div>
+
+      <nav class="tab-bar">
+        <div class="tab-grid">
+          <div class="tab-item active"><div class="icon-wrap"><i class="fa-solid fa-house"></i></div>Home</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-list-check"></i></div>Planner</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-store"></i></div>Shop</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-user"></i></div>Profile</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-gear"></i></div>Settings</div>
+        </div>
+      </nav>
+    </div>
+  </div>
+</body>
+</html>

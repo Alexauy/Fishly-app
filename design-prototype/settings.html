@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fishly Settings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="./assets/styles.css">
+  <style>body { font-family: "Manrope", sans-serif; }</style>
+</head>
+<body class="screen-root">
+  <div class="device">
+    <div class="screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-icons">
+          <i class="fa-solid fa-signal"></i>
+          <i class="fa-solid fa-wifi"></i>
+          <i class="fa-solid fa-battery-three-quarters"></i>
+        </div>
+      </div>
+      <main class="viewport">
+        <section class="glass section-card">
+          <p class="text-xs font-bold uppercase tracking-[0.18em] text-sky-500">Settings</p>
+          <h1 class="mt-2 text-2xl font-extrabold tracking-tight">Shape the experience around your energy.</h1>
+        </section>
+
+        <section class="mt-5 glass section-card">
+          <div class="section-heading">
+            <div>
+              <p class="text-sm font-extrabold text-slate-900">Encouragement</p>
+              <p class="text-xs muted">Supportive advice appears when the app opens, right from Bubbles.</p>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="setting-row"><div class="task-check"><i class="fa-solid fa-comment-dots text-[11px]"></i></div><div class="flex-1"><p class="text-sm font-extrabold">Opening pep talk</p><p class="text-xs muted mt-1">Bubbles pulls from a small pool of encouraging quotes and rotates them over time</p></div><span class="tag">Default</span></div>
+          </div>
+        </section>
+
+        <section class="mt-5 glass section-card">
+          <div class="section-heading">
+            <div>
+              <p class="text-sm font-extrabold text-slate-900">Reward system</p>
+              <p class="text-xs muted">Clear duration-to-coin mapping keeps incentives transparent.</p>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="setting-row"><div class="task-check"><i class="fa-solid fa-coins text-[11px]"></i></div><div class="flex-1"><p class="text-sm font-extrabold">Base reward</p><p class="text-xs muted mt-1">15 mins = 5 coins</p></div><span class="reward-chip">Fixed</span></div>
+            <div class="setting-row"><div class="task-check"><i class="fa-solid fa-hourglass-half text-[11px]"></i></div><div class="flex-1"><p class="text-sm font-extrabold">Increment</p><p class="text-xs muted mt-1">Each time tier adds 5 more coins</p></div><span class="reward-chip">+5</span></div>
+            <div class="setting-row"><div class="task-check"><i class="fa-solid fa-gift text-[11px]"></i></div><div class="flex-1"><p class="text-sm font-extrabold">Longest tier</p><p class="text-xs muted mt-1">150+ mins = 40 coins</p></div><span class="reward-chip">Max</span></div>
+          </div>
+        </section>
+
+        <section class="mt-5 glass section-card">
+          <div class="section-heading">
+            <div>
+              <p class="text-sm font-extrabold text-slate-900">Accessibility</p>
+              <p class="text-xs muted">Readable, calm presentation for students who are already carrying enough.</p>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="setting-row"><div class="task-check"><i class="fa-solid fa-text-height text-[11px]"></i></div><div class="flex-1"><p class="text-sm font-extrabold">Readable sizing</p><p class="text-xs muted mt-1">Large labels and high-contrast action buttons</p></div><span class="tag">AA</span></div>
+          </div>
+        </section>
+      </main>
+
+      <nav class="tab-bar">
+        <div class="tab-grid">
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-house"></i></div>Home</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-list-check"></i></div>Planner</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-store"></i></div>Shop</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-user"></i></div>Profile</div>
+          <div class="tab-item active"><div class="icon-wrap"><i class="fa-solid fa-gear"></i></div>Settings</div>
+        </div>
+      </nav>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fishly Planner Builder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="./assets/styles.css">
+  <style>body { font-family: "Manrope", sans-serif; }</style>
+</head>
+<body class="screen-root">
+  <div class="device">
+    <div class="screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-icons">
+          <i class="fa-solid fa-signal"></i>
+          <i class="fa-solid fa-wifi"></i>
+          <i class="fa-solid fa-battery-three-quarters"></i>
+        </div>
+      </div>
+      <main class="viewport">
+        <section class="glass section-card">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-[0.2em] text-sky-500">Create Quest</p>
+              <h1 class="mt-2 text-2xl font-extrabold tracking-tight">Build a goal that feels doable.</h1>
+            </div>
+            <div class="coin-pill"><i class="fa-solid fa-coins"></i> Reward logic</div>
+          </div>
+
+          <div class="mt-5 space-y-4">
+            <div class="input-shell"><input type="text" value="Final paper sprint" aria-label="Goal title"></div>
+            <div class="input-shell"><input type="text" value="Today, 6:30 PM" aria-label="Due time"></div>
+            <div class="rounded-[24px] border border-slate-200/70 bg-white/70 px-4 py-4">
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <p class="text-sm font-extrabold text-slate-900">Big quest?</p>
+                  <p class="text-xs muted mt-1">If the goal will take a while, split it into smaller subgoals and add each one to the planner.</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" class="sr-only peer" checked data-long-term-toggle>
+                  <div class="w-12 h-7 rounded-full bg-sky-200 peer-checked:bg-sky-400 transition"></div>
+                  <div class="absolute left-1 top-1 w-5 h-5 rounded-full bg-white shadow peer-checked:translate-x-5 transition"></div>
+                </label>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <div>
+                  <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-slate-400">Choose focus time</p>
+                  <p class="text-xs muted mt-1">15 mins starts at 5 coins, and each longer swim adds 5 more.</p>
+                </div>
+                <div class="reward-chip"><span data-reward-label>15 mins</span> • <span data-reward-value>5</span> coins</div>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <button class="duration-option active" data-duration="15 mins" data-coins="5">15 mins • 5</button>
+                <button class="duration-option" data-duration="30 mins" data-coins="10">30 mins • 10</button>
+                <button class="duration-option" data-duration="45 mins" data-coins="15">45 mins • 15</button>
+                <button class="duration-option" data-duration="60 mins" data-coins="20">60 mins • 20</button>
+                <button class="duration-option" data-duration="90 mins" data-coins="25">90 mins • 25</button>
+                <button class="duration-option" data-duration="120 mins" data-coins="30">120 mins • 30</button>
+                <button class="duration-option" data-duration="150 mins" data-coins="35">150 mins • 35</button>
+                <button class="duration-option" data-duration="150+ mins" data-coins="40">150+ mins • 40</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mt-5 glass section-card" data-subgoal-section>
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-sm font-extrabold text-slate-900">Break it into subgoals</p>
+              <p class="text-xs muted mt-1">Each subgoal gets its own little text field and becomes its own planner item.</p>
+            </div>
+            <button class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-600" type="button" data-add-subgoal>
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+          <div class="mt-4 space-y-3" data-subgoal-list>
+            <div class="subgoal-row">
+              <div class="task-check"><i class="fa-solid fa-wand-sparkles text-[11px]"></i></div>
+              <div class="flex-1"><div class="input-shell"><input type="text" value="Outline the intro paragraph" aria-label="Subgoal 1"></div></div>
+            </div>
+            <div class="subgoal-row">
+              <div class="task-check"><i class="fa-solid fa-wand-sparkles text-[11px]"></i></div>
+              <div class="flex-1"><div class="input-shell"><input type="text" value="Collect two supporting journal sources" aria-label="Subgoal 2"></div></div>
+            </div>
+            <div class="subgoal-row">
+              <div class="task-check"><i class="fa-solid fa-wand-sparkles text-[11px]"></i></div>
+              <div class="flex-1"><div class="input-shell"><input type="text" value="Draft the thesis statement" aria-label="Subgoal 3"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mt-5 glass section-card">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-extrabold text-slate-900">Preview on planner</p>
+              <p class="text-xs muted mt-1">Main quest and linked subgoals appear together on Home.</p>
+            </div>
+            <span class="tag">4 items total</span>
+          </div>
+          <div class="mt-4 space-y-3">
+            <div class="task-item">
+              <div class="task-check"></div>
+              <div class="flex-1"><p class="text-sm font-extrabold">Final paper sprint</p><p class="text-xs muted mt-1">90 mins • +25 coins • Split into smaller swims</p></div>
+            </div>
+            <div class="task-item">
+              <div class="task-check"></div>
+              <div class="flex-1"><p class="text-sm font-extrabold">Outline the intro paragraph</p><p class="text-xs muted mt-1">Subgoal • Linked to Final paper sprint</p></div>
+            </div>
+          </div>
+          <button class="cta mt-5">Save Quest to Today’s Planner</button>
+        </section>
+      </main>
+
+      <nav class="tab-bar">
+        <div class="tab-grid">
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-house"></i></div>Home</div>
+          <div class="tab-item active"><div class="icon-wrap"><i class="fa-solid fa-list-check"></i></div>Planner</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-store"></i></div>Shop</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-user"></i></div>Profile</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-gear"></i></div>Settings</div>
+        </div>
+      </nav>
+    </div>
+  </div>
+  <script src="./assets/app.js"></script>
+</body>
+</html>

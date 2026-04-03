@@ -11,6 +11,14 @@ Fishly is a Flutter planner app with a gamified goal system, a customizable fish
 - Firebase Authentication with email/password
 - Cloud Firestore persistence for profiles, tasks, coins, owned items, and equipped items
 
+## HTML Prototype
+
+A separate high-fidelity HTML prototype is included for design review and presentation purposes.
+
+- Prototype entry point: `design-prototype/index.html`
+- Prototype screens and assets are fully separated from the Flutter app
+- These files are included as design/reference material and do not affect Flutter runtime behavior
+
 ## Running The App
 
 ### Requirements

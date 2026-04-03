@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fishly Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="./assets/styles.css">
+  <style>body { font-family: "Manrope", sans-serif; }</style>
+</head>
+<body class="screen-root">
+  <div class="device">
+    <div class="screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-icons">
+          <i class="fa-solid fa-signal"></i>
+          <i class="fa-solid fa-wifi"></i>
+          <i class="fa-solid fa-battery-three-quarters"></i>
+        </div>
+      </div>
+      <main class="viewport">
+        <section class="glass section-card">
+          <div class="flex items-center gap-4">
+            <img src="https://images.pexels.com/photos/3760263/pexels-photo-3760263.jpeg?auto=compress&cs=tinysrgb&w=600" alt="User portrait" class="w-20 h-20 rounded-[28px] object-cover">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-[0.18em] text-sky-500">Profile</p>
+              <h1 class="mt-2 text-2xl font-extrabold tracking-tight">Maya Chen</h1>
+              <p class="text-sm muted mt-1">Design student building consistency one quest at a time</p>
+            </div>
+          </div>
+          <div class="mt-5 grid grid-cols-3 gap-3">
+            <div class="mini-stat"><p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Coins</p><p class="mt-2 text-2xl font-extrabold">185</p></div>
+            <div class="mini-stat"><p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Streak</p><p class="mt-2 text-2xl font-extrabold">11</p></div>
+            <div class="mini-stat"><p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Goals</p><p class="mt-2 text-2xl font-extrabold">42</p></div>
+          </div>
+        </section>
+      </main>
+
+      <nav class="tab-bar">
+        <div class="tab-grid">
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-house"></i></div>Home</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-list-check"></i></div>Planner</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-store"></i></div>Shop</div>
+          <div class="tab-item active"><div class="icon-wrap"><i class="fa-solid fa-user"></i></div>Profile</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-gear"></i></div>Settings</div>
+        </div>
+      </nav>
+    </div>
+  </div>
+</body>
+</html>

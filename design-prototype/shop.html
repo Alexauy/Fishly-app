@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fishly Shop</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="./assets/styles.css">
+  <style>body { font-family: "Manrope", sans-serif; }</style>
+</head>
+<body class="screen-root">
+  <div class="device">
+    <div class="screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-icons">
+          <i class="fa-solid fa-signal"></i>
+          <i class="fa-solid fa-wifi"></i>
+          <i class="fa-solid fa-battery-three-quarters"></i>
+        </div>
+      </div>
+      <main class="viewport">
+        <section class="glass section-card">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-[0.18em] text-sky-500">Personalize</p>
+              <h1 class="mt-2 text-2xl font-extrabold tracking-tight">Reward shop</h1>
+            </div>
+            <div class="coin-pill"><i class="fa-solid fa-coins"></i> 185</div>
+          </div>
+
+          <div class="shop-preview mt-5">
+            <div class="avatar-companion"><div class="avatar-face"><div class="avatar-mouth"></div></div></div>
+            <div class="shelf"></div>
+            <div class="absolute right-4 bottom-5 rounded-[22px] bg-white/75 px-4 py-3 shadow-lg">
+              <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-sky-500">Equipped</p>
+              <p class="mt-1 text-sm font-bold">Bubble trail</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="mt-5 glass section-card">
+          <div class="section-heading">
+            <div>
+              <p class="text-sm font-extrabold text-slate-900">Featured customizations</p>
+              <p class="text-xs muted">Decor and fish accessories turn earned coins into visible personality across the app.</p>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="shop-item">
+              <img src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=300&q=80" alt="Desk wallpaper inspiration" class="w-16 h-16 rounded-[20px] object-cover">
+              <div class="flex-1"><p class="text-sm font-extrabold">Coral Desk Theme</p><p class="text-xs muted mt-1">Sketchy blue panels, coral stickers, and notebook doodles in the background UI</p></div>
+              <span class="reward-chip">80 coins</span>
+            </div>
+            <div class="shop-item">
+              <div class="w-16 h-16 rounded-[20px] bg-gradient-to-br from-sky-200 to-cyan-400 flex items-center justify-center text-white text-xl"><i class="fa-solid fa-fish-fins"></i></div>
+              <div class="flex-1"><p class="text-sm font-extrabold">Sailor Hat</p><p class="text-xs muted mt-1">Dress Bubbles in a tiny sketchy hat for home screen pep talks</p></div>
+              <span class="reward-chip">220 coins</span>
+            </div>
+            <div class="shop-item">
+              <div class="w-16 h-16 rounded-[20px] bg-gradient-to-br from-sky-200 to-blue-500 flex items-center justify-center text-white text-xl"><i class="fa-solid fa-cloud-moon"></i></div>
+              <div class="flex-1"><p class="text-sm font-extrabold">Seafoam Bubbles</p><p class="text-xs muted mt-1">Animated corner bubbles and doodle stars for the dashboard UI</p></div>
+              <span class="reward-chip">120 coins</span>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <nav class="tab-bar">
+        <div class="tab-grid">
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-house"></i></div>Home</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-list-check"></i></div>Planner</div>
+          <div class="tab-item active"><div class="icon-wrap"><i class="fa-solid fa-store"></i></div>Shop</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-user"></i></div>Profile</div>
+          <div class="tab-item"><div class="icon-wrap"><i class="fa-solid fa-gear"></i></div>Settings</div>
+        </div>
+      </nav>
+    </div>
+  </div>
+</body>
+</html>
