@@ -1,0 +1,103 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidUserProfile() {
+      return request.resource.data.keys().hasOnly([
+            'displayName',
+            'email',
+            'coins',
+            'ownedRewardTitles',
+            'completionHistory',
+            'equippedAvatarAsset',
+            'equippedTankAsset',
+            'updatedAt',
+            'createdAt',
+          ]) &&
+          request.resource.data.displayName is string &&
+          request.resource.data.displayName.size() > 0 &&
+          request.resource.data.email is string &&
+          request.resource.data.coins is int &&
+          request.resource.data.coins >= 0 &&
+          request.resource.data.ownedRewardTitles is list &&
+          request.resource.data.completionHistory is map &&
+          request.resource.data.updatedAt is timestamp;
+    }
+
+    function isValidTask() {
+      return request.resource.data.keys().hasOnly([
+            'title',
+            'details',
+            'completed',
+            'isBigGoal',
+            'isSubgoal',
+            'isLeftover',
+            'rewardClaimed',
+            'parentGoalId',
+            'durationLabel',
+            'coins',
+            'createdDateKey',
+            'order',
+            'updatedAt',
+          ]) &&
+          request.resource.data.title is string &&
+          request.resource.data.title.size() > 0 &&
+          request.resource.data.details is string &&
+          request.resource.data.completed is bool &&
+          request.resource.data.isBigGoal is bool &&
+          request.resource.data.isSubgoal is bool &&
+          request.resource.data.isLeftover is bool &&
+          request.resource.data.rewardClaimed is bool &&
+          request.resource.data.order is int &&
+          request.resource.data.order >= 0 &&
+          request.resource.data.updatedAt is timestamp &&
+          (
+            !('coins' in request.resource.data) ||
+            request.resource.data.coins == null ||
+            (
+              request.resource.data.coins is int &&
+              request.resource.data.coins >= 0
+            )
+          ) &&
+          (
+            !('parentGoalId' in request.resource.data) ||
+            request.resource.data.parentGoalId == null ||
+            request.resource.data.parentGoalId is string
+          ) &&
+          (
+            !('durationLabel' in request.resource.data) ||
+            request.resource.data.durationLabel == null ||
+            request.resource.data.durationLabel is string
+          ) &&
+          (
+            !('createdDateKey' in request.resource.data) ||
+            request.resource.data.createdDateKey == null ||
+            request.resource.data.createdDateKey is string
+          );
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidUserProfile();
+      allow delete: if false;
+
+      match /tasks/{taskId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidTask();
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

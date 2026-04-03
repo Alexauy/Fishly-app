@@ -1,0 +1,28 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "fishly-app-a8b77",
+          "appId": "1:1010941145987:android:a1567704bc8fe03297bcb6",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase/firebase_options.dart": {
+          "projectId": "fishly-app-a8b77",
+          "configurations": {
+            "android": "1:1010941145987:android:a1567704bc8fe03297bcb6",
+            "ios": "1:1010941145987:ios:4b0977a1363835d297bcb6",
+            "macos": "1:1010941145987:ios:4b0977a1363835d297bcb6",
+            "web": "1:1010941145987:web:e3fe52b5a29110d497bcb6"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}
