@@ -74,3 +74,7 @@ What that means:
 5. Run FlutterFire configuration for their project.
 6. Replace `lib/firebase/firebase_options.dart`.
 7. Deploy Firestore rules from `firestore.rules`.
+
+## Legal
+
+A privacy policy and account deletion page are included in `docs/` for public hosting and Google Play compliance.
