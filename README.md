@@ -4,11 +4,12 @@ Fishly is a Flutter planner app with a gamified goal system, a customizable fish
 
 ## What Is Included
 
-- Daily planner with regular goals, big goals, and timed subgoals
+- Daily planner with regular goals, big goals with subgoals, and focus time
 - Coin rewards tied to task duration
 - Shop system for Gubby accessories and tank decorations
 - Monthly completion history
 - Firebase Authentication with email/password
+- Firebase-backed account deletion flow for removing user accounts and stored planner data
 - Cloud Firestore persistence for profiles, tasks, coins, owned items, and equipped items
 
 ## HTML Prototype
