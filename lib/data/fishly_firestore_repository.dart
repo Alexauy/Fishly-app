@@ -62,6 +62,42 @@ class FishlyFirestoreRepository {
 
   Future<void> signOut() => _auth.signOut();
 
+  Future<void> deleteCurrentAccount({required String password}) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw FirebaseAuthException(
+        code: 'no-current-user',
+        message: 'No signed-in user was found.',
+      );
+    }
+
+    final email = user.email;
+    if (email == null || email.isEmpty) {
+      throw FirebaseAuthException(
+        code: 'missing-email',
+        message: 'This account cannot be re-authenticated right now.',
+      );
+    }
+
+    final credential = EmailAuthProvider.credential(
+      email: email,
+      password: password,
+    );
+    await user.reauthenticateWithCredential(credential);
+
+    final userRef = _users.doc(user.uid);
+    final tasksSnapshot = await userRef.collection(_tasksCollection).get();
+    final batch = _firestore.batch();
+
+    for (final doc in tasksSnapshot.docs) {
+      batch.delete(doc.reference);
+    }
+    batch.delete(userRef);
+    await batch.commit();
+
+    await user.delete();
+  }
+
   Future<FishlyAccountBundle?> loadAccountBundle(String uid) async {
     final userDoc = await _users.doc(uid).get();
     if (!userDoc.exists) {

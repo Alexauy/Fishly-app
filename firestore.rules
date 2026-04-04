@@ -87,7 +87,7 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isOwner(userId);
       allow create, update: if isOwner(userId) && isValidUserProfile();
-      allow delete: if false;
+      allow delete: if isOwner(userId);
 
       match /tasks/{taskId} {
         allow read: if isOwner(userId);

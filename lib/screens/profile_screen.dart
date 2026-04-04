@@ -14,6 +14,7 @@ class ProfileScreen extends StatelessWidget {
     required this.onCreateAccount,
     required this.onSignIn,
     required this.onSignOut,
+    required this.onDeleteAccount,
   });
 
   final FishlyUserProfile? profile;
@@ -29,6 +30,7 @@ class ProfileScreen extends StatelessWidget {
   final Future<void> Function({required String email, required String password})
   onSignIn;
   final Future<void> Function() onSignOut;
+  final Future<String?> Function({required String password}) onDeleteAccount;
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +88,7 @@ class ProfileScreen extends StatelessWidget {
                   onCreateAccount: onCreateAccount,
                   onSignIn: onSignIn,
                   onSignOut: onSignOut,
+                  onDeleteAccount: onDeleteAccount,
                 ),
               ],
             ),
@@ -145,6 +148,7 @@ class _AccountCreationPanel extends StatefulWidget {
     required this.onCreateAccount,
     required this.onSignIn,
     required this.onSignOut,
+    required this.onDeleteAccount,
   });
 
   final FishlyUserProfile? profile;
@@ -159,6 +163,7 @@ class _AccountCreationPanel extends StatefulWidget {
   final Future<void> Function({required String email, required String password})
   onSignIn;
   final Future<void> Function() onSignOut;
+  final Future<String?> Function({required String password}) onDeleteAccount;
 
   @override
   State<_AccountCreationPanel> createState() => _AccountCreationPanelState();
@@ -205,7 +210,9 @@ class _AccountCreationPanelState extends State<_AccountCreationPanel> {
     if (widget.profile != null) {
       return _SignedInPanel(
         profile: widget.profile!,
+        authBusy: widget.authBusy,
         onSignOut: widget.onSignOut,
+        onDeleteAccount: widget.onDeleteAccount,
       );
     }
 
@@ -404,10 +411,17 @@ class _AccountCreationPanelState extends State<_AccountCreationPanel> {
 }
 
 class _SignedInPanel extends StatelessWidget {
-  const _SignedInPanel({required this.profile, required this.onSignOut});
+  const _SignedInPanel({
+    required this.profile,
+    required this.authBusy,
+    required this.onSignOut,
+    required this.onDeleteAccount,
+  });
 
   final FishlyUserProfile profile;
+  final bool authBusy;
   final Future<void> Function() onSignOut;
+  final Future<String?> Function({required String password}) onDeleteAccount;
 
   @override
   Widget build(BuildContext context) {
@@ -443,7 +457,7 @@ class _SignedInPanel extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: () => onSignOut(),
+              onPressed: authBusy ? null : () => onSignOut(),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50),
                 foregroundColor: FishlyTheme.skyDeep,
@@ -455,6 +469,110 @@ class _SignedInPanel extends StatelessWidget {
                 ),
               ),
               child: const Text('Sign Out'),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: authBusy
+                  ? null
+                  : () async {
+                      final passwordController = TextEditingController();
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Delete account?'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'This will permanently remove your Fishly account and stored planner data.',
+                                ),
+                                const SizedBox(height: 14),
+                                TextField(
+                                  controller: passwordController,
+                                  obscureText: true,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Password',
+                                    hintText: 'Enter your password to confirm',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: const Text('Cancel'),
+                              ),
+                              FilledButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: const Color(0xFFD8F0FF),
+                                  foregroundColor: FishlyTheme.skyDeep,
+                                ),
+                                child: const Text('Delete Account'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+
+                      if (confirmed == true) {
+                        final password = passwordController.text;
+                        if (password.isEmpty) {
+                          if (!context.mounted) {
+                            return;
+                          }
+                          await showDialog<void>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Just one thing'),
+                              content: const Text(
+                                'Please enter your password to delete your account.',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('Okay'),
+                                ),
+                              ],
+                            ),
+                          );
+                          return;
+                        }
+
+                        final error = await onDeleteAccount(password: password);
+                        if (error != null && context.mounted) {
+                          await showDialog<void>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Unable to delete account'),
+                              content: Text(error),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('Okay'),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      }
+                    },
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(50),
+                backgroundColor: const Color(0xFFD8F0FF),
+                foregroundColor: FishlyTheme.skyDeep,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: Text(authBusy ? 'Working...' : 'Delete Account'),
             ),
           ),
         ],

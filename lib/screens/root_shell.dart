@@ -210,6 +210,36 @@ class _RootShellState extends State<RootShell> {
     await _repository.signOut();
   }
 
+  Future<String?> _deleteAccount({required String password}) async {
+    setState(() {
+      _authBusy = true;
+      _authError = null;
+    });
+
+    try {
+      await _repository.deleteCurrentAccount(password: password);
+      return null;
+    } on FirebaseAuthException catch (error) {
+      if (!mounted) {
+        return error.message ?? error.code;
+      }
+      setState(() {
+        _authBusy = false;
+        _authError = error.message ?? error.code;
+      });
+      return error.message ?? error.code;
+    } catch (error) {
+      if (!mounted) {
+        return error.toString();
+      }
+      setState(() {
+        _authBusy = false;
+        _authError = error.toString();
+      });
+      return error.toString();
+    }
+  }
+
   void _schedulePersist() {
     if (_profile == null) {
       return;
@@ -647,6 +677,7 @@ class _RootShellState extends State<RootShell> {
         onCreateAccount: _createAccount,
         onSignIn: _signIn,
         onSignOut: _signOut,
+        onDeleteAccount: _deleteAccount,
       ),
     ];
 
