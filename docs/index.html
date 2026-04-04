@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fishly Legal</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #eef9ff;
+        --panel: rgba(255, 255, 255, 0.9);
+        --border: #cfe8f7;
+        --text: #133a57;
+        --muted: #46687f;
+        --accent: #2387c9;
+        --shadow: rgba(24, 66, 97, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+        background: linear-gradient(180deg, #f4fcff 0%, var(--bg) 100%);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      main {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .card {
+        width: min(100%, 760px);
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        padding: 32px 24px;
+        box-shadow: 0 18px 40px var(--shadow);
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(2rem, 5vw, 3rem);
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .links {
+        display: grid;
+        gap: 14px;
+        margin-top: 28px;
+      }
+
+      a {
+        display: block;
+        padding: 16px 18px;
+        border-radius: 20px;
+        text-decoration: none;
+        color: var(--text);
+        background: linear-gradient(180deg, #fbfeff 0%, #ddf3ff 100%);
+        border: 1px solid #d7eefb;
+        box-shadow: 0 10px 24px rgba(35, 135, 201, 0.08);
+        font-weight: 700;
+      }
+
+      a:hover {
+        border-color: #b6ddf3;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="card">
+        <div class="eyebrow">Fishly</div>
+        <h1>Legal Pages</h1>
+        <p>Public documents for privacy and account deletion requests.</p>
+        <div class="links">
+          <a href="./privacy-policy.html">Privacy Policy</a>
+          <a href="./account-deletion.html">Account Deletion</a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
