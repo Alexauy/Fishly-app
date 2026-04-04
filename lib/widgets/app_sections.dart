@@ -407,6 +407,11 @@ class PlannerTaskTile extends StatelessWidget {
                             Text(task.title, style: titleStyle),
                             if (task.tag != null) _Pill(text: task.tag!),
                             if (task.reward != null) _Pill(text: task.reward!),
+                            if (task.coins != null)
+                              _Pill(
+                                text:
+                                    '${task.coins} ${task.coins == 1 ? 'coin' : 'coins'}',
+                              ),
                           ],
                         ),
                         if (task.subtitle.isNotEmpty) ...[

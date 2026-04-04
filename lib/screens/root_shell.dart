@@ -41,18 +41,6 @@ class _RootShellState extends State<RootShell> {
   String? _gubbyMessageOverride;
   int _gubbyMessageRevision = 0;
 
-  static const _durations = <(String, int)>[
-    ('<15 mins', 2),
-    ('15 mins', 5),
-    ('30 mins', 10),
-    ('45 mins', 15),
-    ('60 mins', 20),
-    ('90 mins', 25),
-    ('120 mins', 30),
-    ('150 mins', 35),
-    ('150+ mins', 40),
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -112,9 +100,7 @@ class _RootShellState extends State<RootShell> {
             FishlyUserProfile(
               uid: user.uid,
               displayName:
-                  _pendingDisplayName ??
-                  user.displayName ??
-                  'Fishly User',
+                  _pendingDisplayName ?? user.displayName ?? 'Fishly User',
               email: user.email ?? '',
               coins: 0,
               ownedRewardTitles: const <String>[],
@@ -681,7 +667,7 @@ class _RootShellState extends State<RootShell> {
                     child: GoalDetailScreen(
                       goal: selectedGoal,
                       subgoals: selectedSubgoals,
-                      durations: _durations,
+                      benchmarks: focusTimeBenchmarks,
                       onToggleTask: _toggleTask,
                       onDeleteTask: _deleteTask,
                       onSaveGoal: _saveGoalDetail,
@@ -922,7 +908,7 @@ class _GoalComposerSheetState extends State<_GoalComposerSheet> {
   final _goalController = TextEditingController();
   final _detailsController = TextEditingController();
   final _subgoals = <_SubgoalDraft>[_SubgoalDraft()];
-  int selectedDuration = 0;
+  final _focusMinutesController = TextEditingController();
   int activeSubgoalIndex = 0;
   bool bigGoal = false;
 
@@ -930,9 +916,11 @@ class _GoalComposerSheetState extends State<_GoalComposerSheet> {
   void dispose() {
     _goalController.dispose();
     _detailsController.dispose();
+    _focusMinutesController.dispose();
     for (final subgoal in _subgoals) {
       subgoal.controller.dispose();
       subgoal.detailsController.dispose();
+      subgoal.focusMinutesController.dispose();
     }
     super.dispose();
   }
@@ -1034,10 +1022,13 @@ class _GoalComposerSheetState extends State<_GoalComposerSheet> {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 12),
-                _durationGrid(
-                  context,
-                  selectedDuration,
-                  (index) => setState(() => selectedDuration = index),
+                TextField(
+                  controller: _focusMinutesController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    hintText: 'Focus time in minutes',
+                    hintStyle: TextStyle(color: Color(0x7A35506A)),
+                  ),
                 ),
               ],
               if (bigGoal) ...[
@@ -1068,10 +1059,7 @@ class _GoalComposerSheetState extends State<_GoalComposerSheet> {
                     index: i,
                     draft: _subgoals[i],
                     expanded: i == activeSubgoalIndex,
-                    durations: _RootShellState._durations,
                     onTapHeader: () => setState(() => activeSubgoalIndex = i),
-                    onDurationChanged: (value) =>
-                        setState(() => _subgoals[i].selectedDuration = value),
                   ),
                   if (i != _subgoals.length - 1) const SizedBox(height: 16),
                 ],
@@ -1095,51 +1083,6 @@ class _GoalComposerSheetState extends State<_GoalComposerSheet> {
     );
   }
 
-  Widget _durationGrid(
-    BuildContext context,
-    int selectedIndex,
-    ValueChanged<int> onChanged,
-  ) {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      children: List.generate(_RootShellState._durations.length, (index) {
-        final duration = _RootShellState._durations[index];
-        final selected = selectedIndex == index;
-        return GestureDetector(
-          onTap: () => onChanged(index),
-          child: Container(
-            width: (MediaQuery.of(context).size.width - 52) / 2,
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: selected
-                    ? FishlyTheme.skyDeep.withValues(alpha: 0.24)
-                    : FishlyTheme.navy.withValues(alpha: 0.08),
-              ),
-              gradient: selected
-                  ? const LinearGradient(
-                      colors: [Color(0xFFEDF8FF), Color(0xFFD4EFFF)],
-                    )
-                  : null,
-              color: selected ? null : Colors.white.withValues(alpha: 0.82),
-            ),
-            child: Text(
-              '${duration.$1} | ${duration.$2}',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                color: selected
-                    ? const Color(0xFF0E5F8D)
-                    : const Color(0xFF35506A),
-              ),
-            ),
-          ),
-        );
-      }),
-    );
-  }
-
   void _submit() {
     final title = _goalController.text.trim();
     if (title.isEmpty) {
@@ -1156,16 +1099,41 @@ class _GoalComposerSheetState extends State<_GoalComposerSheet> {
         return;
       }
 
-      final subgoals = _subgoals
+      final invalidSubgoalMinutes = _subgoals
           .map(
-            (draft) => _GoalComposerSubgoal(
+            (draft) => int.tryParse(draft.focusMinutesController.text.trim()),
+          )
+          .any((minutes) => minutes == null || minutes <= 0);
+      if (invalidSubgoalMinutes) {
+        _showMessage(
+          'Please enter a valid focus time in minutes for each subgoal',
+        );
+        return;
+      }
+
+      final tooLargeSubgoalMinutes = _subgoals
+          .map(
+            (draft) =>
+                int.tryParse(draft.focusMinutesController.text.trim()) ?? 0,
+          )
+          .any((minutes) => minutes > maxFocusMinutes);
+      if (tooLargeSubgoalMinutes) {
+        _showMessage(
+          "Oops! You've entered a time value that is too large. The focus time must be less than 1440 minutes (24 hours)",
+        );
+        return;
+      }
+
+      final subgoals = _subgoals
+          .map((draft) {
+            final minutes = int.parse(draft.focusMinutesController.text.trim());
+            return _GoalComposerSubgoal(
               title: draft.controller.text.trim(),
               details: draft.detailsController.text.trim(),
-              durationLabel:
-                  _RootShellState._durations[draft.selectedDuration].$1,
-              coins: _RootShellState._durations[draft.selectedDuration].$2,
-            ),
-          )
+              durationLabel: formatFocusTimeLabel(minutes),
+              coins: coinsForFocusMinutes(minutes),
+            );
+          })
           .where((subgoal) => subgoal.title.isNotEmpty)
           .toList();
       if (subgoals.isEmpty) {
@@ -1185,13 +1153,25 @@ class _GoalComposerSheetState extends State<_GoalComposerSheet> {
       return;
     }
 
+    final minutes = int.tryParse(_focusMinutesController.text.trim());
+    if (minutes == null || minutes <= 0) {
+      _showMessage('Please enter a valid focus time in minutes');
+      return;
+    }
+    if (minutes > maxFocusMinutes) {
+      _showMessage(
+        "Oops! You've entered a time value that is too large. The focus time must be less than 1440 minutes (24 hours)",
+      );
+      return;
+    }
+
     Navigator.of(context).pop(
       _GoalComposerResult(
         title: title,
         details: _detailsController.text.trim(),
         bigGoal: false,
-        durationLabel: _RootShellState._durations[selectedDuration].$1,
-        coins: _RootShellState._durations[selectedDuration].$2,
+        durationLabel: formatFocusTimeLabel(minutes),
+        coins: coinsForFocusMinutes(minutes),
         subgoals: const [],
       ),
     );
@@ -1218,11 +1198,11 @@ class _SubgoalDraft {
   _SubgoalDraft()
     : controller = TextEditingController(),
       detailsController = TextEditingController(),
-      selectedDuration = 0;
+      focusMinutesController = TextEditingController();
 
   final TextEditingController controller;
   final TextEditingController detailsController;
-  int selectedDuration;
+  final TextEditingController focusMinutesController;
 }
 
 class _SubgoalEditor extends StatelessWidget {
@@ -1230,23 +1210,22 @@ class _SubgoalEditor extends StatelessWidget {
     required this.index,
     required this.draft,
     required this.expanded,
-    required this.durations,
     required this.onTapHeader,
-    required this.onDurationChanged,
   });
 
   final int index;
   final _SubgoalDraft draft;
   final bool expanded;
-  final List<(String, int)> durations;
   final VoidCallback onTapHeader;
-  final ValueChanged<int> onDurationChanged;
 
   @override
   Widget build(BuildContext context) {
     final title = draft.controller.text.trim();
     final summary = title.isEmpty ? 'Subgoal ${index + 1}' : title;
-    final duration = durations[draft.selectedDuration];
+    final minutes = int.tryParse(draft.focusMinutesController.text.trim());
+    final summaryReward = minutes == null || minutes <= 0
+        ? null
+        : coinsForFocusMinutes(minutes);
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -1276,7 +1255,9 @@ class _SubgoalEditor extends StatelessWidget {
                         if (!expanded) ...[
                           const SizedBox(height: 2),
                           Text(
-                            '${duration.$1} | ${duration.$2} coins',
+                            minutes == null || minutes <= 0
+                                ? 'Add focus time'
+                                : '${formatFocusTimeLabel(minutes)} | $summaryReward coins',
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ],
@@ -1312,40 +1293,13 @@ class _SubgoalEditor extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: List.generate(durations.length, (durationIndex) {
-                final duration = durations[durationIndex];
-                final selected = draft.selectedDuration == durationIndex;
-                return GestureDetector(
-                  onTap: () => onDurationChanged(durationIndex),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: selected ? const Color(0xFFEDF8FF) : Colors.white,
-                      borderRadius: BorderRadius.circular(999),
-                      border: Border.all(
-                        color: selected
-                            ? FishlyTheme.skyDeep.withValues(alpha: 0.24)
-                            : FishlyTheme.navy.withValues(alpha: 0.08),
-                      ),
-                    ),
-                    child: Text(
-                      '${duration.$1} | ${duration.$2}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        color: selected
-                            ? const Color(0xFF0E5F8D)
-                            : const Color(0xFF35506A),
-                      ),
-                    ),
-                  ),
-                );
-              }),
+            TextField(
+              controller: draft.focusMinutesController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                hintText: 'Focus time in minutes',
+                hintStyle: TextStyle(color: Color(0x7A35506A)),
+              ),
             ),
           ],
         ],

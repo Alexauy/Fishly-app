@@ -1,5 +1,50 @@
 enum ShopRewardCategory { accessory, tankDecoration }
 
+const int maxFocusMinutes = 1440;
+const int maxRewardBenchmarkMinutes = 150;
+const int aboveBenchmarkCoins = 40;
+const List<({int minutes, int coins})> focusTimeBenchmarks = [
+  (minutes: 5, coins: 2),
+  (minutes: 15, coins: 5),
+  (minutes: 30, coins: 10),
+  (minutes: 45, coins: 15),
+  (minutes: 60, coins: 20),
+  (minutes: 90, coins: 25),
+  (minutes: 120, coins: 30),
+  (minutes: 150, coins: 35),
+];
+
+int coinsForFocusMinutes(int minutes) {
+  if (minutes > maxRewardBenchmarkMinutes) {
+    return aboveBenchmarkCoins;
+  }
+
+  var closest = focusTimeBenchmarks.first;
+  var closestDistance = (minutes - closest.minutes).abs();
+
+  for (final benchmark in focusTimeBenchmarks.skip(1)) {
+    final distance = (minutes - benchmark.minutes).abs();
+    if (distance < closestDistance ||
+        (distance == closestDistance && benchmark.minutes < closest.minutes)) {
+      closest = benchmark;
+      closestDistance = distance;
+    }
+  }
+
+  return closest.coins;
+}
+
+String formatFocusTimeLabel(int minutes) {
+  return minutes == 1 ? '1 min' : '$minutes mins';
+}
+
+int? parseFocusTimeLabel(String? label) {
+  if (label == null || label.trim().isEmpty) {
+    return null;
+  }
+  return int.tryParse(label.trim().split(' ').first);
+}
+
 class PlannerTask {
   const PlannerTask({
     required this.id,
