@@ -22,6 +22,7 @@ class FishlyFirestoreRepository {
     required String password,
     required int coins,
     required Set<String> ownedRewardTitles,
+    required Map<String, int> completionHistory,
     required String equippedAvatarAsset,
     required String equippedTankAsset,
     required List<PlannerTask> tasks,
@@ -39,7 +40,7 @@ class FishlyFirestoreRepository {
       email: email,
       coins: coins,
       ownedRewardTitles: ownedRewardTitles.toList(),
-      completionHistory: const <String, int>{},
+      completionHistory: Map<String, int>.from(completionHistory),
       equippedAvatarAsset: equippedAvatarAsset,
       equippedTankAsset: equippedTankAsset,
     );

@@ -93,15 +93,17 @@ class _GoalDetailScreenState extends State<GoalDetailScreen> {
     }
 
     if (widget.goal.isBigGoal) {
-      final invalidSubgoalMinutes = _subgoals
-          .map(
-            (subgoal) =>
-                int.tryParse(subgoal.focusMinutesController.text.trim()),
-          )
-          .any((minutes) => minutes == null || minutes <= 0);
-      if (invalidSubgoalMinutes) {
+      final invalidSubgoalIndex = _subgoals.indexWhere((subgoal) {
+        final minutes = int.tryParse(subgoal.focusMinutesController.text.trim());
+        return minutes == null || minutes <= 0;
+      });
+      if (invalidSubgoalIndex != -1) {
+        final title = _subgoals[invalidSubgoalIndex].titleController.text.trim();
+        final subgoalLabel = title.isNotEmpty
+            ? title
+            : 'Subgoal ${invalidSubgoalIndex + 1}';
         _showMessage(
-          'Please enter a valid focus time in minutes for each subgoal',
+          'Please enter a valid focus time in minutes for "$subgoalLabel"',
         );
         return;
       }
@@ -185,7 +187,15 @@ class _GoalDetailScreenState extends State<GoalDetailScreen> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     AeroDeleteButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        final confirmed = await _confirmDeletion(
+                          title: 'Delete goal?',
+                          message:
+                              'This goal will be removed from your planner.',
+                        );
+                        if (confirmed != true || !mounted) {
+                          return;
+                        }
                         widget.onDeleteTask(widget.goal.id);
                         widget.onClose();
                       },
@@ -320,13 +330,7 @@ class _GoalDetailScreenState extends State<GoalDetailScreen> {
                                   }
                                 : null,
                             onDelete: () {
-                              setState(() {
-                                final removed = _subgoals.removeAt(i);
-                                if (!removed.id.startsWith('draft-')) {
-                                  widget.onDeleteTask(removed.id);
-                                }
-                                removed.dispose();
-                              });
+                              _handleDeleteSubgoal(i);
                             },
                           ),
                           if (i != _subgoals.length - 1)
@@ -377,6 +381,47 @@ class _GoalDetailScreenState extends State<GoalDetailScreen> {
         ],
       ),
     );
+  }
+
+  Future<bool?> _confirmDeletion({
+    required String title,
+    required String message,
+  }) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleDeleteSubgoal(int index) async {
+    final confirmed = await _confirmDeletion(
+      title: 'Delete subgoal?',
+      message: 'This subgoal will be removed from your planner.',
+    );
+    if (confirmed != true || !mounted) {
+      return;
+    }
+
+    setState(() {
+      final removed = _subgoals.removeAt(index);
+      if (!removed.id.startsWith('draft-')) {
+        widget.onDeleteTask(removed.id);
+      }
+      removed.dispose();
+    });
   }
 }
 

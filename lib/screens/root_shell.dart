@@ -38,8 +38,10 @@ class _RootShellState extends State<RootShell> {
   bool _authBusy = false;
   String? _authError;
   String? _pendingDisplayName;
+  _PendingGuestAccountState? _pendingGuestAccountState;
   String? _gubbyMessageOverride;
   int _gubbyMessageRevision = 0;
+  bool _guestSaveReminderShown = false;
 
   @override
   void initState() {
@@ -76,6 +78,8 @@ class _RootShellState extends State<RootShell> {
         _equippedTankAsset = defaultTankPanelAsset;
         _completionHistory = <String, int>{};
         _pendingDisplayName = null;
+        _pendingGuestAccountState = null;
+        _guestSaveReminderShown = false;
         _currentDateKey = _todayKey();
         _tasks = List<PlannerTask>.from(dailyTasks);
         _syncBigGoalState();
@@ -90,14 +94,10 @@ class _RootShellState extends State<RootShell> {
 
     try {
       final bundle = await _repository.loadAccountBundle(user.uid);
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _profile =
-            bundle?.profile ??
-            FishlyUserProfile(
+      final pendingGuestState = _pendingGuestAccountState;
+      final fallbackProfile =
+          pendingGuestState == null
+          ? FishlyUserProfile(
               uid: user.uid,
               displayName:
                   _pendingDisplayName ?? user.displayName ?? 'Fishly User',
@@ -106,8 +106,27 @@ class _RootShellState extends State<RootShell> {
               ownedRewardTitles: const <String>[],
               equippedAvatarAsset: defaultGubbyAsset,
               equippedTankAsset: defaultTankPanelAsset,
+            )
+          : FishlyUserProfile(
+              uid: user.uid,
+              displayName: pendingGuestState.displayName,
+              email: user.email ?? '',
+              coins: pendingGuestState.coins,
+              ownedRewardTitles: pendingGuestState.ownedRewardTitles.toList(),
+              completionHistory: Map<String, int>.from(
+                pendingGuestState.completionHistory,
+              ),
+              equippedAvatarAsset: pendingGuestState.equippedAvatarAsset,
+              equippedTankAsset: pendingGuestState.equippedTankAsset,
             );
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _profile = bundle?.profile ?? fallbackProfile;
         _pendingDisplayName = null;
+        _pendingGuestAccountState = null;
         _coins = _profile!.coins;
         _ownedRewardTitles
           ..clear()
@@ -117,7 +136,10 @@ class _RootShellState extends State<RootShell> {
             _profile!.equippedAvatarAsset ?? defaultGubbyAsset;
         _equippedTankAsset =
             _profile!.equippedTankAsset ?? defaultTankPanelAsset;
-        _tasks = bundle?.tasks ?? List<PlannerTask>.from(dailyTasks);
+        _tasks =
+            bundle?.tasks ??
+            pendingGuestState?.tasks.map((task) => task.copyWith()).toList() ??
+            List<PlannerTask>.from(dailyTasks);
         _applyDayRolloverIfNeeded();
         _syncBigGoalState();
         _authBusy = false;
@@ -138,6 +160,15 @@ class _RootShellState extends State<RootShell> {
     required String email,
     required String password,
   }) async {
+    _pendingGuestAccountState = _PendingGuestAccountState(
+      displayName: displayName,
+      coins: _coins,
+      ownedRewardTitles: _ownedRewardTitles.toSet(),
+      completionHistory: Map<String, int>.from(_completionHistory),
+      equippedAvatarAsset: _equippedAvatarAsset,
+      equippedTankAsset: _equippedTankAsset,
+      tasks: _tasks.map((task) => task.copyWith()).toList(),
+    );
     setState(() {
       _authBusy = true;
       _authError = null;
@@ -151,6 +182,7 @@ class _RootShellState extends State<RootShell> {
         password: password,
         coins: _coins,
         ownedRewardTitles: _ownedRewardTitles,
+        completionHistory: _completionHistory,
         equippedAvatarAsset: _equippedAvatarAsset,
         equippedTankAsset: _equippedTankAsset,
         tasks: _tasks,
@@ -163,6 +195,7 @@ class _RootShellState extends State<RootShell> {
         _authBusy = false;
         _authError = error.message ?? error.code;
         _pendingDisplayName = null;
+        _pendingGuestAccountState = null;
       });
     } catch (error) {
       if (!mounted) {
@@ -172,6 +205,7 @@ class _RootShellState extends State<RootShell> {
         _authBusy = false;
         _authError = error.toString();
         _pendingDisplayName = null;
+        _pendingGuestAccountState = null;
       });
     }
   }
@@ -347,28 +381,93 @@ class _RootShellState extends State<RootShell> {
 
   void _applyDayRolloverIfNeeded({bool force = false}) {
     final todayKey = _todayKey();
-    if (!force && todayKey == _currentDateKey) {
+    final reconciledTasks = _reconcileTasksForDate(todayKey);
+    final hasTaskChanges = _tasksChanged(reconciledTasks);
+    if (!force && todayKey == _currentDateKey && !hasTaskChanges) {
       return;
     }
-    _rolloverToDate(todayKey);
+    _tasks = reconciledTasks;
+    _currentDateKey = todayKey;
+    _syncBigGoalState();
   }
 
-  void _rolloverToDate(String nextDateKey) {
-    final previousDateKey = _currentDateKey;
-    final currentTasks = _tasks.where((task) => !task.isLeftover).toList();
-    final newLeftovers = currentTasks
-        .where((task) => !task.completed)
-        .map(
-          (task) => task.copyWith(
+  List<PlannerTask> _reconcileTasksForDate(String todayKey) {
+    return _tasks.expand((task) {
+      final ageInDays = _taskAgeInDays(task, todayKey);
+
+      if (task.isLeftover) {
+        if (ageInDays == 1 && !task.completed) {
+          return [
+            task.copyWith(
+              isLeftover: true,
+              completed: false,
+              createdDateKey: task.createdDateKey ?? todayKey,
+            ),
+          ];
+        }
+        return const <PlannerTask>[];
+      }
+
+      if (ageInDays == null || ageInDays <= 0) {
+        return [task];
+      }
+
+      if (ageInDays == 1 && !task.completed) {
+        return [
+          task.copyWith(
             isLeftover: true,
             completed: false,
-            createdDateKey: previousDateKey,
+            createdDateKey: task.createdDateKey ?? todayKey,
           ),
-        )
-        .toList();
+        ];
+      }
 
-    _tasks = newLeftovers;
-    _currentDateKey = nextDateKey;
+      return const <PlannerTask>[];
+    }).toList();
+  }
+
+  int? _taskAgeInDays(PlannerTask task, String todayKey) {
+    final createdDateKey = task.createdDateKey;
+    if (createdDateKey == null || createdDateKey.isEmpty) {
+      return null;
+    }
+
+    final createdDate = DateTime.tryParse(createdDateKey);
+    final todayDate = DateTime.tryParse(todayKey);
+    if (createdDate == null || todayDate == null) {
+      return null;
+    }
+
+    final normalizedCreatedDate = DateTime(
+      createdDate.year,
+      createdDate.month,
+      createdDate.day,
+    );
+    final normalizedTodayDate = DateTime(
+      todayDate.year,
+      todayDate.month,
+      todayDate.day,
+    );
+    return normalizedTodayDate.difference(normalizedCreatedDate).inDays;
+  }
+
+  bool _tasksChanged(List<PlannerTask> updatedTasks) {
+    if (_tasks.length != updatedTasks.length) {
+      return true;
+    }
+
+    for (var i = 0; i < _tasks.length; i++) {
+      final current = _tasks[i];
+      final updated = updatedTasks[i];
+      if (current.id != updated.id ||
+          current.completed != updated.completed ||
+          current.isLeftover != updated.isLeftover ||
+          current.createdDateKey != updated.createdDateKey) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   void _applyCompletionHistoryDelta(Map<String, bool> previousCompleted) {
@@ -510,6 +609,32 @@ class _RootShellState extends State<RootShell> {
     _schedulePersist();
   }
 
+  void _confirmDeleteTask(String id) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete goal?'),
+        content: const Text(
+          'This goal will be removed from your planner.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      _deleteTask(id);
+    }
+  }
+
   void _purchaseReward(ShopReward reward) {
     if (_ownedRewardTitles.contains(reward.title) || _coins < reward.price) {
       return;
@@ -569,6 +694,7 @@ class _RootShellState extends State<RootShell> {
   }
 
   Future<void> _openAddGoalComposer() async {
+    final hadNoTasksBefore = _tasks.isEmpty;
     final result = await showModalBottomSheet<_GoalComposerResult>(
       context: context,
       isScrollControlled: true,
@@ -626,6 +752,28 @@ class _RootShellState extends State<RootShell> {
       _syncBigGoalState();
     });
     _schedulePersist();
+
+    if (_profile == null && hadNoTasksBefore && !_guestSaveReminderShown) {
+      _guestSaveReminderShown = true;
+      if (!mounted) {
+        return;
+      }
+      await showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Wait!'),
+          content: const Text(
+            'If you want to save your progress, make an account now in the profile tab.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Okay'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -658,7 +806,7 @@ class _RootShellState extends State<RootShell> {
         totalGoals: totalGoals,
         onOpenGoalDetail: _openGoalDetail,
         onToggleTask: _toggleTask,
-        onDeleteTask: _deleteTask,
+        onDeleteTask: _confirmDeleteTask,
         onAddGoal: _openAddGoalComposer,
       ),
       ShopScreen(
@@ -1130,14 +1278,17 @@ class _GoalComposerSheetState extends State<_GoalComposerSheet> {
         return;
       }
 
-      final invalidSubgoalMinutes = _subgoals
-          .map(
-            (draft) => int.tryParse(draft.focusMinutesController.text.trim()),
-          )
-          .any((minutes) => minutes == null || minutes <= 0);
-      if (invalidSubgoalMinutes) {
+      final invalidSubgoalIndex = _subgoals.indexWhere((draft) {
+        final minutes = int.tryParse(draft.focusMinutesController.text.trim());
+        return minutes == null || minutes <= 0;
+      });
+      if (invalidSubgoalIndex != -1) {
+        final subgoalLabel =
+            _subgoals[invalidSubgoalIndex].controller.text.trim().isNotEmpty
+            ? _subgoals[invalidSubgoalIndex].controller.text.trim()
+            : 'Subgoal ${invalidSubgoalIndex + 1}';
         _showMessage(
-          'Please enter a valid focus time in minutes for each subgoal',
+          'Please enter a valid focus time in minutes for "$subgoalLabel"',
         );
         return;
       }
@@ -1337,4 +1488,24 @@ class _SubgoalEditor extends StatelessWidget {
       ),
     );
   }
+}
+
+class _PendingGuestAccountState {
+  const _PendingGuestAccountState({
+    required this.displayName,
+    required this.coins,
+    required this.ownedRewardTitles,
+    required this.completionHistory,
+    required this.equippedAvatarAsset,
+    required this.equippedTankAsset,
+    required this.tasks,
+  });
+
+  final String displayName;
+  final int coins;
+  final Set<String> ownedRewardTitles;
+  final Map<String, int> completionHistory;
+  final String equippedAvatarAsset;
+  final String equippedTankAsset;
+  final List<PlannerTask> tasks;
 }
